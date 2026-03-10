@@ -1,50 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Award, X, ZoomIn } from "lucide-react";
 import SectionTitle from "./SectionTitle";
 import ScrollReveal from "./ScrollReveal";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Certificate {
-  id: number;
+  id: string;
   title: string;
   issuer: string;
   year: string;
-  image: string;
+  image_url: string;
 }
 
-const certificates: Certificate[] = [
-  {
-    id: 1,
-    title: "Sertifikat Contoh 1",
-    issuer: "Lembaga Sertifikasi",
-    year: "2024",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 2,
-    title: "Sertifikat Contoh 2",
-    issuer: "Lembaga Sertifikasi",
-    year: "2024",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 3,
-    title: "Sertifikat Contoh 3",
-    issuer: "Lembaga Sertifikasi",
-    year: "2023",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 4,
-    title: "Sertifikat Contoh 4",
-    issuer: "Lembaga Sertifikasi",
-    year: "2023",
-    image: "/placeholder.svg",
-  },
-];
-
 const CertificatesSection = () => {
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [selected, setSelected] = useState<Certificate | null>(null);
+
+  useEffect(() => {
+    supabase
+      .from("certificates")
+      .select("*")
+      .order("display_order", { ascending: true })
+      .then(({ data }) => {
+        if (data) setCertificates(data);
+      });
+  }, []);
+
+  if (certificates.length === 0) return null;
 
   return (
     <section id="certificates" className="py-24 px-6 bg-gradient-dark">
@@ -62,10 +45,9 @@ const CertificatesSection = () => {
                 className="group relative rounded-lg overflow-hidden border border-border bg-card cursor-pointer transition-colors hover:border-primary/40"
                 onClick={() => setSelected(cert)}
               >
-                {/* Image */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
                   <img
-                    src={cert.image}
+                    src={cert.image_url}
                     alt={cert.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
@@ -74,7 +56,6 @@ const CertificatesSection = () => {
                   </div>
                 </div>
 
-                {/* Info */}
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Award className="w-4 h-4 text-primary shrink-0" />
@@ -91,7 +72,6 @@ const CertificatesSection = () => {
         </div>
       </div>
 
-      {/* Lightbox */}
       <AnimatePresence>
         {selected && (
           <motion.div
@@ -117,7 +97,7 @@ const CertificatesSection = () => {
               </button>
 
               <img
-                src={selected.image}
+                src={selected.image_url}
                 alt={selected.title}
                 className="w-full object-contain max-h-[70vh] bg-card"
               />
