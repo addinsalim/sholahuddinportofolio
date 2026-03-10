@@ -49,7 +49,7 @@ const HeroSection = () => {
           transition={{ delay: 0.7, duration: 0.6 }}
           className="text-muted-foreground italic text-lg md:text-xl mb-10 font-light"
         >
-          "Syariat sebagai Jalan, Surga sebagai Tujuan."
+          "Syari'at sebagai Jalan, Ridha Allah sebagai Tujuan."
         </motion.p>
 
         <motion.div
